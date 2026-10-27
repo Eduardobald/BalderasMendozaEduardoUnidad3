@@ -1,0 +1,53 @@
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MaterialControl | Inicio</title>
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <div class="layout">
+        <aside class="sidebar">
+            <div class="logo">
+                <span class="logo-icon">▦</span>
+                <span>Material<span class="logo-light">Control</span></span>
+            </div>
+
+            <div class="menu-label">MENÚ PRINCIPAL</div>
+            <nav>
+                <a href="/" class="nav-link active">⌂ Inicio</a>
+                <a href="/materiales" class="nav-link">
+                    ▤ Registro de materiales
+                </a>
+            </nav>
+        </aside>
+
+        <main class="main">
+            <header class="topbar">
+                <div class="breadcrumb">Panel / Inicio</div>
+                <div class="user">
+                    MC <span>Administrador</span>
+                </div>
+            </header>
+
+            <div class="content">
+                <div class="eyebrow">PANEL PRINCIPAL</div>
+                <h1>Bienvenido a MaterialControl</h1>
+                <p>Sistema web de control y registro de materiales.</p>
+
+                <div class="summary" style="margin-top:30px;">
+                    <div class="summary-icon">▣</div>
+                    <div>
+                        <strong>Registro de materiales</strong>
+                        <p>Consulta el módulo de captura de materiales.</p>
+                        <a href="/materiales">Abrir registro</a>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+</body>
+</html>

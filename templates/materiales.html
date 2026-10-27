@@ -1,0 +1,164 @@
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Materiales | MaterialControl</title>
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <div class="layout">
+
+        <aside class="sidebar">
+            <div class="logo">
+                <span class="logo-icon">▦</span>
+                <span>Material<span class="logo-light">Control</span></span>
+            </div>
+
+            <div class="menu-label">MENÚ PRINCIPAL</div>
+
+            <nav>
+                <a href="/" class="nav-link">
+                    <span>⌂</span> Inicio
+                </a>
+                <a href="/materiales" class="nav-link active">
+                    <span>▤</span> Registro de materiales
+                </a>
+            </nav>
+
+            <div class="sidebar-footer">
+                <span class="status-dot"></span>
+                Sistema de gestión
+                <small>Versión 1.0</small>
+            </div>
+        </aside>
+
+        <main class="main">
+            <header class="topbar">
+                <div class="breadcrumb">Administración / Materiales</div>
+                <div class="user">MC <span>Administrador</span></div>
+            </header>
+
+            <div class="content">
+                <div class="page-heading">
+                    <div>
+                        <div class="eyebrow">GESTIÓN DE INVENTARIO</div>
+                        <h1>Registro de materiales</h1>
+                        <p>Captura la información de los materiales recibidos.</p>
+                    </div>
+                    <span class="tag">Módulo de entradas</span>
+                </div>
+
+                <div class="summary">
+                    <div class="summary-icon">▣</div>
+                    <div>
+                        <strong>Nueva entrada de material</strong>
+                        <p>Completa los campos para preparar un registro.</p>
+                    </div>
+                </div>
+
+                <section class="panel">
+                    <div class="panel-heading">
+                        <div>
+                            <h2>Información del material</h2>
+                            <p>Los campos marcados con * son obligatorios.</p>
+                        </div>
+                        <span class="step">01 / Registro</span>
+                    </div>
+
+                    <form id="materialForm">
+                        <div class="form-grid">
+                            <div class="field">
+                                <label for="fecha">Fecha de recepción *</label>
+                                <input type="date" id="fecha" required>
+                            </div>
+
+                            <div class="field">
+                                <label for="proveedor">Proveedor *</label>
+                                <input type="text" id="proveedor"
+                                       placeholder="Nombre del proveedor"
+                                       maxlength="150" required>
+                            </div>
+
+                            <div class="field">
+                                <label for="material">Tipo de material *</label>
+                                <select id="material" required>
+                                    <option value="">Seleccionar material</option>
+                                    <option>Lingote</option>
+                                    <option>Rebaba</option>
+                                    <option>Briqueta</option>
+                                    <option>Grueso</option>
+                                    <option>Arena</option>
+                                    <option>Cobre</option>
+                                    <option>Silicio</option>
+                                    <option>Otro</option>
+                                </select>
+                            </div>
+
+                            <div class="field">
+                                <label for="remision">Número de remisión *</label>
+                                <input type="text" id="remision"
+                                       placeholder="Ej. REM-00125"
+                                       maxlength="100" required>
+                            </div>
+
+                            <div class="field">
+                                <label for="lote">Lote *</label>
+                                <input type="text" id="lote"
+                                       placeholder="Ej. L-001"
+                                       maxlength="100" required>
+                            </div>
+
+                            <div class="field">
+                                <label for="peso">Peso recibido (kg) *</label>
+                                <input type="number" id="peso"
+                                       min="0.01" step="0.01"
+                                       placeholder="0.00" required>
+                            </div>
+                        </div>
+
+                        <div class="form-footer">
+                            <span>Verifica la información antes de continuar.</span>
+                            <div class="actions">
+                                <button type="reset" class="btn-secondary">
+                                    Limpiar
+                                </button>
+                                <button type="submit" class="btn-primary">
+                                    Registrar material
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                    <div id="mensaje" class="mensaje" role="status"></div>
+                </section>
+
+                <div class="info-note">
+                    <strong>Nota:</strong> Esta versión es una demostración
+                    de la interfaz. El almacenamiento en base de datos
+                    se agregará en el siguiente desarrollo.
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        const form = document.getElementById("materialForm");
+        const mensaje = document.getElementById("mensaje");
+
+        form.addEventListener("submit", function(event) {
+            event.preventDefault();
+            if (!form.reportValidity()) return;
+
+            mensaje.textContent =
+                "Formulario validado. Pendiente conectar el guardado.";
+            mensaje.classList.add("visible");
+        });
+
+        form.addEventListener("reset", function() {
+            mensaje.classList.remove("visible");
+        });
+    </script>
+</body>
+</html>
