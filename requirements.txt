@@ -1,3 +1,8 @@
+
 Flask
 Flask-Login
+Flask-WTF
+argon2-cffi
+python-dotenv
+Flask-Limiter
 requests
