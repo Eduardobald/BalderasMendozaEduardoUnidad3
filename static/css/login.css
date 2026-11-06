@@ -146,3 +146,25 @@ body {
         font-size: 27px;
     }
 }
+
+
+/* BOTÓN PRECIOS DE MATERIALES */
+
+.btn-precios {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #17365d;
+    color: #ffffff;
+    padding: 14px 24px;
+    border-radius: 8px;
+    text-decoration: none;
+    font-size: 15px;
+    font-weight: 600;
+    transition: background-color 0.2s ease;
+}
+
+.btn-precios:hover {
+    background-color: #285586;
+    color: #ffffff;
+}

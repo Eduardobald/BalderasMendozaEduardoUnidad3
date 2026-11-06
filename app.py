@@ -13,6 +13,7 @@ from flask import (
     session
 )
 from flask_wtf.csrf import CSRFProtect
+
 from argon2 import PasswordHasher
 from argon2.exceptions import (
     VerifyMismatchError,
@@ -20,7 +21,14 @@ from argon2.exceptions import (
     InvalidHashError
 )
 
-from database import buscar_usuario, crear_base_datos
+from database import (
+    buscar_usuario,
+    crear_base_datos,
+    conectar
+)
+
+# API externa de precios de metales
+from api_metales import obtener_precios
 
 
 # ==========================================
@@ -40,30 +48,30 @@ if not secret_key or len(secret_key) < 64:
 
 app.config["SECRET_KEY"] = secret_key
 
-# Seguridad de las cookies
+# Seguridad de cookies
 app.config["SESSION_COOKIE_HTTPONLY"] = True
 app.config["SESSION_COOKIE_SAMESITE"] = "Lax"
 
-# Para localhost con HTTP.
-# En producción con HTTPS debe ser True.
+# False para desarrollo local con HTTP.
+# En producción se necesita HTTPS.
 app.config["SESSION_COOKIE_SECURE"] = (
     os.getenv("USE_HTTPS", "0") == "1"
 )
 
-# Duración de la sesión
+# Duración de sesión
 app.config["PERMANENT_SESSION_LIFETIME"] = timedelta(
     minutes=30
 )
 
 app.config["SESSION_REFRESH_EACH_REQUEST"] = False
 
-# Protección CSRF
+# Protección contra CSRF
 csrf = CSRFProtect(app)
 
-# Contraseñas protegidas con Argon2id
+# Verificación de contraseñas
 password_hasher = PasswordHasher()
 
-# Crear la tabla de usuarios si no existe
+# Preparar base de datos
 crear_base_datos()
 
 
@@ -88,7 +96,7 @@ def agregar_seguridad(response):
 
 
 # ==========================================
-# PROTEGER PÁGINAS
+# PROTECCIÓN DE RUTAS
 # ==========================================
 
 def login_requerido(funcion):
@@ -101,10 +109,9 @@ def login_requerido(funcion):
         if not usuario_id:
             return redirect(url_for("login"))
 
-        # Verificar que la cuenta siga activa
-        from database import conectar
-
+        # Comprobar que el usuario siga activo
         with conectar() as conexion:
+
             usuario = conexion.execute(
                 """
                 SELECT id
@@ -131,7 +138,21 @@ def login_requerido(funcion):
 def login():
 
     if session.get("usuario_id"):
-        return redirect(url_for("inicio"))
+
+        with conectar() as conexion:
+            usuario_activo = conexion.execute(
+                """
+                SELECT id
+                FROM usuarios
+                WHERE id = ? AND activo = 1
+                """,
+                (session["usuario_id"],)
+            ).fetchone()
+
+        if usuario_activo:
+            return redirect(url_for("inicio"))
+
+        session.clear()
 
     error = None
 
@@ -152,6 +173,7 @@ def login():
         if registro and registro["activo"] == 1:
 
             try:
+
                 password_hasher.verify(
                     registro["password_hash"],
                     password
@@ -216,6 +238,48 @@ def materiales():
 
 
 # ==========================================
+# PRECIOS DE MATERIALES - API EXTERNA
+# ==========================================
+
+@app.route("/precios")
+@login_requerido
+def precios_materiales():
+
+    # Consultar MetalCharts API
+    precios = obtener_precios()
+
+    # Preparar información para la página
+    aluminio = None
+    cobre = None
+
+    if precios:
+
+        aluminio = precios.get("aluminio")
+        cobre = precios.get("cobre")
+
+        # Convertir precios a USD por kilogramo
+        if isinstance(aluminio, dict):
+            if aluminio.get("unit") == "mt":
+                aluminio = dict(aluminio)
+                aluminio["precio_kg"] = (
+                    aluminio["price"] / 1000
+                )
+
+        if isinstance(cobre, dict):
+            if cobre.get("unit") == "lb":
+                cobre = dict(cobre)
+                cobre["precio_kg"] = (
+                    cobre["price"] / 0.45359237
+                )
+
+    return render_template(
+        "precios.html",
+        aluminio=aluminio,
+        cobre=cobre
+    )
+
+
+# ==========================================
 # ERROR 404
 # ==========================================
 
@@ -223,9 +287,15 @@ def materiales():
 def pagina_no_encontrada(error):
 
     return """
-    <h1>Error 404</h1>
-    <p>La página solicitada no existe.</p>
-    <a href="/">Volver al inicio</a>
+    <div style="
+        font-family: Arial;
+        text-align: center;
+        margin-top: 100px;
+    ">
+        <h1>Error 404</h1>
+        <p>La página solicitada no existe.</p>
+        <a href="/">Volver al inicio</a>
+    </div>
     """, 404
 
 
