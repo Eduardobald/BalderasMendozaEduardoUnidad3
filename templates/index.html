@@ -3,7 +3,8 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
 
     <title>MaterialControl | Inicio</title>
 
@@ -46,7 +47,31 @@
                     📈 Precios de materiales
                 </a>
 
+                <a href="{{ url_for('servicio_materiales') }}"
+                   class="nav-link">
+                    ◈ Web Service propio
+                </a>
+
             </nav>
+
+            <!-- CERRAR SESIÓN -->
+            <div class="sidebar-footer">
+
+                <form action="{{ url_for('logout') }}"
+                      method="POST">
+
+                    <input type="hidden"
+                           name="csrf_token"
+                           value="{{ csrf_token() }}">
+
+                    <button type="submit"
+                            class="btn-logout">
+                        ⏻ Cerrar sesión
+                    </button>
+
+                </form>
+
+            </div>
 
         </aside>
 
@@ -54,7 +79,6 @@
         <!-- CONTENIDO PRINCIPAL -->
         <main class="main">
 
-            <!-- BARRA SUPERIOR -->
             <header class="topbar">
 
                 <div class="breadcrumb">
@@ -67,8 +91,6 @@
 
             </header>
 
-
-            <!-- PANEL PRINCIPAL -->
             <div class="content">
 
                 <div class="eyebrow">
@@ -80,12 +102,12 @@
                 </h1>
 
                 <p>
-                    Sistema web de control y registro de materiales.
+                    Sistema web de control y registro
+                    de materiales.
                 </p>
 
-
-                <!-- ACCESO A REGISTRO DE MATERIALES -->
-                <div class="summary" style="margin-top:30px;">
+                <div class="summary"
+                     style="margin-top:30px;">
 
                     <div class="summary-icon">
                         ▣
@@ -98,7 +120,8 @@
                         </strong>
 
                         <p>
-                            Consulta el módulo de captura de materiales.
+                            Consulta el módulo de captura
+                            de materiales.
                         </p>
 
                         <a href="{{ url_for('materiales') }}">

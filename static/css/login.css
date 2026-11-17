@@ -168,3 +168,43 @@ body {
     background-color: #285586;
     color: #ffffff;
 }
+
+
+/* ==========================================
+   CERRAR SESIÓN
+========================================== */
+
+.sidebar {
+    display: flex;
+    flex-direction: column;
+}
+
+.sidebar-footer {
+    margin-top: auto;
+    padding: 20px 12px;
+}
+
+.sidebar-footer form {
+    margin: 0;
+}
+
+.btn-logout {
+    width: 100%;
+    padding: 13px 15px;
+    background: transparent;
+    border: 1px solid #52677f;
+    border-radius: 7px;
+    color: #dce6f2;
+    font-size: 14px;
+    font-family: inherit;
+    text-align: left;
+    cursor: pointer;
+    transition: 0.2s ease;
+}
+
+.btn-logout:hover {
+    background: #a92c35;
+    border-color: #a92c35;
+    color: white;
+}
+

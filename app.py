@@ -2,7 +2,9 @@
 import os
 from datetime import timedelta
 from functools import wraps
-
+from flask_limiter import Limiter
+from flask_limiter.util import get_remote_address
+from flask_limiter.errors import RateLimitExceeded
 from dotenv import load_dotenv
 from flask import (
     Flask,
@@ -30,6 +32,8 @@ from database import (
 # API externa de precios de metales
 from api_metales import obtener_precios
 
+from api_materiales import api_materiales, MATERIALES
+
 
 # ==========================================
 # CONFIGURACIÓN GENERAL
@@ -38,7 +42,7 @@ from api_metales import obtener_precios
 load_dotenv()
 
 app = Flask(__name__)
-
+app.register_blueprint(api_materiales)
 secret_key = os.getenv("SECRET_KEY")
 
 if not secret_key or len(secret_key) < 64:
@@ -70,6 +74,17 @@ csrf = CSRFProtect(app)
 
 # Verificación de contraseñas
 password_hasher = PasswordHasher()
+
+# ==========================================
+# PROTECCIÓN CONTRA FUERZA BRUTA
+# ==========================================
+
+limiter = Limiter(
+    get_remote_address,
+    app=app,
+    default_limits=[],
+    storage_uri="memory://"
+)
 
 # Preparar base de datos
 crear_base_datos()
@@ -130,11 +145,16 @@ def login_requerido(funcion):
     return verificar
 
 
+
 # ==========================================
-# INICIO DE SESIÓN
+# INICIO DE SESIÓN SEGURO
 # ==========================================
 
 @app.route("/login", methods=["GET", "POST"])
+@limiter.limit(
+    "5 per 5 minutes",
+    methods=["POST"]
+)
 def login():
 
     if session.get("usuario_id"):
@@ -173,19 +193,15 @@ def login():
         if registro and registro["activo"] == 1:
 
             try:
-
                 password_hasher.verify(
                     registro["password_hash"],
                     password
                 )
 
-                # Limpiar sesión anterior
                 session.clear()
-
                 session.permanent = True
 
                 session["usuario_id"] = registro["id"]
-
                 session["usuario"] = registro["usuario"]
 
                 return redirect(url_for("inicio"))
@@ -201,6 +217,23 @@ def login():
         "login.html",
         error=error
     )
+
+
+# ==========================================
+# MENSAJE POR EXCESO DE INTENTOS
+# ==========================================
+
+@app.errorhandler(RateLimitExceeded)
+def limite_intentos(error):
+
+    return render_template(
+        "login.html",
+        error=(
+            "Demasiados intentos de inicio de sesión. "
+            "Espera 5 minutos antes de volver a intentarlo."
+        )
+    ), 429
+
 
 
 # ==========================================
@@ -298,6 +331,20 @@ def pagina_no_encontrada(error):
     </div>
     """, 404
 
+
+# ==========================================
+# VISTA DEL WEB SERVICE PROPIO
+# ==========================================
+
+@app.route("/servicio-materiales")
+@login_requerido
+def servicio_materiales():
+
+    return render_template(
+        "servicio_materiales.html",
+        materiales=MATERIALES,
+        total=len(MATERIALES)
+    )
 
 # ==========================================
 # EJECUTAR APLICACIÓN

@@ -1,0 +1,263 @@
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>Web Service propio | MaterialControl</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: "Segoe UI", Arial, sans-serif;
+            background: #f2f5fa;
+            color: #10263d;
+        }
+
+        .encabezado {
+            background: #10263d;
+            color: white;
+            padding: 22px 35px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .encabezado h2 {
+            margin: 0;
+            font-size: 22px;
+        }
+
+        .volver {
+            color: white;
+            text-decoration: none;
+            padding: 10px 16px;
+            border: 1px solid #7793b2;
+            border-radius: 6px;
+        }
+
+        .contenedor {
+            max-width: 1150px;
+            margin: 40px auto;
+            padding: 0 20px;
+        }
+
+        h1 {
+            margin-bottom: 8px;
+        }
+
+        .descripcion {
+            color: #6b7c90;
+            margin-bottom: 30px;
+        }
+
+        .tarjetas {
+            display: grid;
+            grid-template-columns: repeat(
+                auto-fit,
+                minmax(250px, 1fr)
+            );
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .tarjeta {
+            background: white;
+            padding: 25px;
+            border-radius: 10px;
+            border: 1px solid #dfe6ee;
+        }
+
+        .tarjeta span {
+            display: block;
+            color: #718096;
+            margin-bottom: 12px;
+        }
+
+        .tarjeta strong {
+            font-size: 28px;
+            color: #17365d;
+        }
+
+        .estado {
+            color: #16804b !important;
+        }
+
+        .tabla-contenedor {
+            background: white;
+            border: 1px solid #dfe6ee;
+            border-radius: 10px;
+            overflow-x: auto;
+        }
+
+        .tabla-titulo {
+            padding: 22px 25px;
+            font-size: 18px;
+            font-weight: 600;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 550px;
+        }
+
+        th {
+            background: #e9eef5;
+            text-align: left;
+            padding: 16px 20px;
+            color: #34455c;
+        }
+
+        td {
+            padding: 17px 20px;
+            border-top: 1px solid #edf0f4;
+        }
+
+        .acciones {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin-top: 25px;
+        }
+
+        .boton {
+            display: inline-block;
+            padding: 13px 20px;
+            background: #17365d;
+            color: white;
+            border-radius: 6px;
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        .boton-secundario {
+            background: white;
+            color: #17365d;
+            border: 1px solid #17365d;
+        }
+
+        .nota {
+            color: #718096;
+            font-size: 13px;
+            margin-top: 25px;
+            line-height: 1.6;
+        }
+    </style>
+</head>
+
+<body>
+
+    <header class="encabezado">
+
+        <h2>MaterialControl</h2>
+
+        <a href="{{ url_for('inicio') }}"
+           class="volver">
+            Volver al inicio
+        </a>
+
+    </header>
+
+    <main class="contenedor">
+
+        <h1>Web Service propio</h1>
+
+        <p class="descripcion">
+            Consulta de materiales mediante un
+            servicio web REST desarrollado con Flask.
+        </p>
+
+        <section class="tarjetas">
+
+            <div class="tarjeta">
+                <span>Total de materiales</span>
+                <strong>{{ total }}</strong>
+            </div>
+
+            <div class="tarjeta">
+                <span>Estado del servicio</span>
+                <strong class="estado">Disponible</strong>
+            </div>
+
+        </section>
+
+        <section class="tabla-contenedor">
+
+            <div class="tabla-titulo">
+                Materiales disponibles
+            </div>
+
+            <table>
+
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Código</th>
+                        <th>Material</th>
+                        <th>Unidad</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+
+                    {% for material in materiales %}
+
+                    <tr>
+                        <td>{{ material.id }}</td>
+                        <td>{{ material.codigo }}</td>
+                        <td>{{ material.nombre }}</td>
+                        <td>{{ material.unidad }}</td>
+                    </tr>
+
+                    {% else %}
+
+                    <tr>
+                        <td colspan="4">
+                            No hay materiales disponibles.
+                        </td>
+                    </tr>
+
+                    {% endfor %}
+
+                </tbody>
+
+            </table>
+
+        </section>
+
+        <div class="acciones">
+
+            <a href="{{ url_for('api_materiales.consultar_materiales') }}"
+               target="_blank"
+               rel="noopener noreferrer"
+               class="boton">
+                Ver respuesta JSON
+            </a>
+
+            <a href="{{ url_for('servicio_materiales') }}"
+               class="boton boton-secundario">
+                Actualizar consulta
+            </a>
+
+        </div>
+
+        <p class="nota">
+            Servicio web propio desarrollado con Python,
+            Flask y arquitectura REST.
+            Los materiales mostrados son datos de ejemplo.
+            La respuesta original de la API está disponible
+            en formato JSON.
+        </p>
+
+    </main>
+
+</body>
+</html>
