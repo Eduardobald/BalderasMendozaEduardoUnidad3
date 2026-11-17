@@ -6,7 +6,14 @@ from argon2 import PasswordHasher
 
 
 # Ubicación de la base de datos
-DB_PATH = Path(__file__).resolve().parent / "usuarios.db"
+import os
+
+DB_PATH = Path(
+    os.getenv(
+        "DATABASE_PATH",
+        str(Path(__file__).resolve().parent / "usuarios.db")
+    )
+)
 
 # Protección de contraseñas
 password_hasher = PasswordHasher()
